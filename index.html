@@ -47,32 +47,7 @@ sb.auth.onAuthStateChange((ev,s)=>{if(ev==="SIGNED_OUT"){location.reload()}});
 function download(c,n,t){let u=URL.createObjectURL(new Blob([c],{type:t})),a=document.createElement("a");a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
 function rows(){return [["Type","Name/Description","Mobile","Category","Amount","Date","Status"],...D.v.map(x=>["Vargani",x.person_name,x.mobile,"",x.amount,x.collected_on,"Received"]),...D.e.map(x=>["Expense",x.description,"",x.category,x.amount,x.spent_on,""]),...D.p.map(x=>["Pending Vargani",x.person_name,x.mobile,"",x.amount,x.expected_on||"",x.status]),...D.s.map(x=>["Sabhsad",x.person_name,x.mobile,x.about||"",x.amount,x.contributed_on,"Received"]) ]}
 $("csv").onclick=()=>download("\ufeff"+rows().map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n"),"ShivSamarat_Ganpati_Vargani.csv","text/csv");
-$("xls").onclick=()=>{let r=rows(),t="<table border=1>"+r.map((x,i)=>"<tr>"+x.map(v=>(i?"<td>":"<th>")+esc(v)+(i?"</td>":"</th>")).join("")+"</tr>").join("")+"</table>";download("\ufeff<html><meta charset=utf-8><body><h2>ShivSamarat Ganpati Vargani</h2>"+t+"
-<!--
-SUPABASE SQL TO RUN ONCE:
-
-alter table public.pending_vargani add column if not exists about text;
-
-create table if not exists public.sabhsad (
-  id uuid primary key default gen_random_uuid(),
-  person_name text not null,
-  mobile text,
-  amount numeric not null,
-  contributed_on date not null,
-  about text,
-  added_by uuid references auth.users(id),
-  created_at timestamptz default now()
-);
-
-alter table public.sabhsad enable row level security;
-drop policy if exists "authenticated users can read sabhsad" on public.sabhsad;
-drop policy if exists "authenticated users can insert sabhsad" on public.sabhsad;
-drop policy if exists "authenticated users can delete sabhsad" on public.sabhsad;
-create policy "authenticated users can read sabhsad" on public.sabhsad for select to authenticated using (true);
-create policy "authenticated users can insert sabhsad" on public.sabhsad for insert to authenticated with check (true);
-create policy "authenticated users can delete sabhsad" on public.sabhsad for delete to authenticated using (true);
--->
-</body></html>","ShivSamarat_Ganpati_Vargani.xls","application/vnd.ms-excel")};
+$("xls").onclick=()=>{let r=rows(),t="<table border=1>"+r.map((x,i)=>"<tr>"+x.map(v=>(i?"<td>":"<th>")+esc(v)+(i?"</td>":"</th>")).join("")+"</tr>").join("")+"</table>";download("\ufeff<html><meta charset=utf-8><body><h2>ShivSamarat Ganpati Vargani</h2>"+t+"</body></html>","ShivSamarat_Ganpati_Vargani.xls","application/vnd.ms-excel")};
 let s=(await sb.auth.getSession()).data.session;if(s)start(s);
 </script>
 <!--
