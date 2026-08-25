@@ -65,6 +65,9 @@ create table if not exists public.sabhsad (
 );
 
 alter table public.sabhsad enable row level security;
+drop policy if exists "authenticated users can read sabhsad" on public.sabhsad;
+drop policy if exists "authenticated users can insert sabhsad" on public.sabhsad;
+drop policy if exists "authenticated users can delete sabhsad" on public.sabhsad;
 create policy "authenticated users can read sabhsad" on public.sabhsad for select to authenticated using (true);
 create policy "authenticated users can insert sabhsad" on public.sabhsad for insert to authenticated with check (true);
 create policy "authenticated users can delete sabhsad" on public.sabhsad for delete to authenticated using (true);
@@ -89,6 +92,9 @@ create table if not exists public.sabhsad (
 );
 
 alter table public.sabhsad enable row level security;
+drop policy if exists "authenticated users can read sabhsad" on public.sabhsad;
+drop policy if exists "authenticated users can insert sabhsad" on public.sabhsad;
+drop policy if exists "authenticated users can delete sabhsad" on public.sabhsad;
 create policy "authenticated users can read sabhsad" on public.sabhsad for select to authenticated using (true);
 create policy "authenticated users can insert sabhsad" on public.sabhsad for insert to authenticated with check (true);
 create policy "authenticated users can delete sabhsad" on public.sabhsad for delete to authenticated using (true);
