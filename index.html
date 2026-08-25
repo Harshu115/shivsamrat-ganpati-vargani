@@ -21,7 +21,23 @@ import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 const sb=createClient("https://ufrsbskwjzlsvvxuciox.supabase.co","sb_publishable_oDZnVdHGu8rgUXmnsnJFQw_-uvWpdSX"),$=x=>document.getElementById(x),today=()=>new Date().toISOString().slice(0,10),money=n=>"₹"+Number(n||0).toLocaleString("en-IN");let D={v:[],e:[],p:[],s:[]},signup=false;
 function note(t,err=false){$("msg").textContent=t;$("msg").className="notice "+(err?"error":"");$("msg").classList.remove("hidden");setTimeout(()=>$("msg").classList.add("hidden"),3000)}
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]) )}
-async function load(){let [v,e,p,s]=await Promise.all([sb.from("vargani").select("*").order("created_at",{ascending:false}),sb.from("expenses").select("*").order("created_at",{ascending:false}),sb.from("pending_vargani").select("*").order("created_at",{ascending:false}),sb.from("sabhsad").select("*").order("created_at",{ascending:false})]);if(v.error||e.error||p.error||s.error)return note((v.error||e.error||p.error||s.error).message,true);D={v:v.data||[],e:e.data||[],p:p.data||[],s:s.data||[]};render()}
+async function load(){
+  let [v,e,p,s]=await Promise.all([
+    sb.from("vargani").select("*").order("created_at",{ascending:false}),
+    sb.from("expenses").select("*").order("created_at",{ascending:false}),
+    sb.from("pending_vargani").select("*").order("created_at",{ascending:false}),
+    sb.from("sabhsad").select("*").order("created_at",{ascending:false})
+  ]);
+  if(v.error||e.error||p.error){
+    return note((v.error||e.error||p.error).message,true);
+  }
+  if(s.error){
+    console.warn("Sabhsad table is not available yet:",s.error.message);
+    s={data:[]};
+  }
+  D={v:v.data||[],e:e.data||[],p:p.data||[],s:s.data||[]};
+  render()
+}
 function filtered(arr,q){q=String(q||"").trim().toLowerCase();if(!q)return arr;return arr.filter(x=>String(x.person_name||"").toLowerCase().includes(q)||String(x.mobile||"").replace(/\\D/g,"").includes(q.replace(/\\D/g,"")))}
 function item(title,sub,type,id,mobile="",amount=0,waType="vargani"){let wa=(mobile&&["vargani","pending","sabhsad"].includes(waType))?`<button class="del" style="background:#e8f7ed;color:#16803c" onclick="sendWhatsApp('${esc(mobile)}','${esc(title)}',${Number(amount)||0},'${waType}')">WhatsApp</button>`:"";return `<div class="row"><div><b>${esc(title)}</b><small>${esc(sub)}</small></div><div style="display:flex;gap:6px;align-items:center">${wa}<button class="del" onclick="delRow('${type}','${id}')">Delete</button></div></div>`}
 function render(){let tv=D.v.reduce((a,x)=>a+Number(x.amount),0),ts=D.s.reduce((a,x)=>a+Number(x.amount),0),te=D.e.reduce((a,x)=>a+Number(x.amount),0),tp=D.p.filter(x=>x.status!=="paid").reduce((a,x)=>a+Number(x.amount),0);$("tv").textContent=money(tv+ts);$("te").textContent=money(te);$("bal").textContent=money(tv+ts-te);$("tp").textContent=money(tp);$("rv").innerHTML=D.v.slice(0,5).map(x=>item(x.person_name,money(x.amount)+" • "+x.collected_on,"vargani",x.id,x.mobile,x.amount)).join("")||"No entries";$("re").innerHTML=D.e.slice(0,5).map(x=>item(x.description,money(x.amount)+" • "+x.category,"expenses",x.id)).join("")||"No entries";$("vl").innerHTML=filtered(D.v,$("vsearch")?.value).map(x=>item(x.person_name,money(x.amount)+" • "+x.collected_on+" • "+(x.mobile||"No mobile"),"vargani",x.id,x.mobile,x.amount)).join("")||"No records";$("el").innerHTML=D.e.map(x=>item(x.description,money(x.amount)+" • "+x.category+" • "+x.spent_on,"expenses",x.id)).join("")||"No records";$("pl").innerHTML=filtered(D.p,$("psearch")?.value).map(x=>item(x.person_name,money(x.amount)+" • "+(x.expected_on||"No date")+" • "+(x.about||"No note"),"pending_vargani",x.id,x.mobile,x.amount,"pending")).join("")||"No pending records";$("sl").innerHTML=filtered(D.s,$("ssearch")?.value).map(x=>item(x.person_name,money(x.amount)+" • "+x.contributed_on+" • "+(x.about||"Personal contribution"),"sabhsad",x.id,x.mobile,x.amount,"sabhsad")).join("")||"No records"}
