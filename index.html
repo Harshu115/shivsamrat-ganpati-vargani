@@ -71,42 +71,91 @@ window.editSabhsad=async id=>{
 
 $("sf").onsubmit=async e=>{
   e.preventDefault();
-  let id=await uid(), editId=e.target.dataset.editId;
-  let payload={person_name:$("sn").value.trim(),mobile:$("sm").value.trim(),amount:+$("sa").value,contributed_on:$("sd").value,about:$("sababout").value.trim()};
-  let r=editId
-    ? await sb.from("sabhsad").update(payload).eq("id",editId)
-    : await sb.from("sabhsad").insert({...payload,added_by:id});
-  if(r.error)note(r.error.message,true);
-  else{
-    let mobile=$("sm").value.trim(),name=$("sn").value.trim(),amount=+$("sa").value;
-    e.target.reset();$("sd").value=today();delete e.target.dataset.editId;
-    let b=e.target.querySelector("button[type=submit]");if(b)b.textContent="Save Sabhsad";
-    note(editId?"Sabhsad contribution updated":"Sabhsad contribution saved");
-    if(mobile)setTimeout(()=>sendWhatsApp(mobile,name,amount,"sabhsad"),150);
-    await load();
+  let id=await uid();
+  let editId=e.target.dataset.editId||"";
+  let payload={
+    person_name:$("sn").value.trim(),
+    mobile:$("sm").value.trim(),
+    amount:+$("sa").value,
+    contributed_on:$("sd").value,
+    about:$("sababout").value.trim()
+  };
+
+  let r;
+  if(editId){
+    // EDIT: update the exact existing row. Never create a new row.
+    r=await sb.from("sabhsad").update(payload).eq("id",editId);
+  }else{
+    // NEW ENTRY: if the same member already exists, update that row
+    // instead of creating a duplicate.
+    let q=sb.from("sabhsad").select("id").limit(1);
+    if(payload.mobile){
+      q=q.eq("mobile",payload.mobile);
+    }else{
+      q=q.ilike("person_name",payload.person_name);
+    }
+    let existing=await q.maybeSingle();
+    if(existing.error){
+      note(existing.error.message,true);
+      return;
+    }
+    if(existing.data){
+      r=await sb.from("sabhsad").update(payload).eq("id",existing.data.id);
+      editId=existing.data.id;
+    }else{
+      r=await sb.from("sabhsad").insert({...payload,added_by:id});
+    }
   }
-};$("vsearch").oninput=render;$("psearch").oninput=render;$("ssearch").oninput=render;
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$(b.dataset.p).classList.add("active");window.editSabhsad=async id=>{
+
+  if(r.error){
+    note(r.error.message,true);
+    return;
+  }
+
+  let mobile=payload.mobile,name=payload.person_name,amount=payload.amount;
+  e.target.reset();
+  $("sd").value=today();
+  delete e.target.dataset.editId;
+  let b=e.target.querySelector("button[type=submit]");
+  if(b)b.textContent="Save Sabhsad";
+  note(editId?"Sabhsad contribution updated":"Sabhsad contribution saved");
+  if(mobile)setTimeout(()=>sendWhatsApp(mobile,name,amount,"sabhsad"),150);
+  await load();
+};
+
+window.editSabhsad=async id=>{
   let x=D.s.find(r=>String(r.id)===String(id));
   if(!x)return note("Sabhsad entry not found",true);
+
   $("sn").value=x.person_name||"";
   $("sm").value=x.mobile||"";
   $("sa").value=x.amount||"";
   $("sd").value=x.contributed_on||today();
   $("sababout").value=x.about||"";
   $("sf").dataset.editId=x.id;
+
   let b=$("sf").querySelector("button[type=submit]");
-  if(b){b.textContent="Update Sabhsad";}
+  if(b)b.textContent="Update Sabhsad";
+
   document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
   $("sab").classList.add("active");
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-  document.querySelector('.tab[data-p="sab"]').classList.add("active");
+  let tab=document.querySelector('.tab[data-p="sab"]');
+  if(tab)tab.classList.add("active");
   window.scrollTo({top:0,behavior:"smooth"});
 };
 
-$("sf").onsubmit=async e=>{e.preventDefault();let id=await uid(),r=await sb.from("sabhsad").insert({person_name:$("sn").value.trim(),mobile:$("sm").value.trim(),amount:+$("sa").value,contributed_on:$("sd").value,about:$("sababout").value.trim(),added_by:id});if(r.error)note(r.error.message,true);else{let mobile=$("sm").value.trim(),name=$("sn").value.trim(),amount=+$("sa").value;e.target.reset();$("sd").value=today();note("Sabhsad contribution saved");if(mobile)setTimeout(()=>sendWhatsApp(mobile,name,amount,"sabhsad"),150)}};
-$("vsearch").oninput=render;$("psearch").oninput=render;$("ssearch").oninput=render;
-document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active")});
+$("vsearch").oninput=render;
+$("psearch").oninput=render;
+$("ssearch").oninput=render;
+
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  $(b.dataset.p).classList.add("active");
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+});
+
 async function start(s){$("auth").classList.add("hidden");$("app").classList.remove("hidden");$("who").textContent=s.user.email;document.querySelectorAll('input[type="date"]').forEach(x=>x.value=today());await load();sb.removeAllChannels();sb.channel("live").on("postgres_changes",{event:"*",schema:"public",table:"vargani"},load).on("postgres_changes",{event:"*",schema:"public",table:"expenses"},load).on("postgres_changes",{event:"*",schema:"public",table:"pending_vargani"},load).on("postgres_changes",{event:"*",schema:"public",table:"sabhsad"},load).subscribe()}
 $("logout").onclick=()=>sb.auth.signOut();$("sw").onclick=()=>{signup=!signup;$("ab").textContent=signup?"Create Account":"Login";$("nl").classList.toggle("hidden",!signup);$("sw").textContent=signup?"Already have an account? Login":"New user? Create account"};
 $("af").onsubmit=async e=>{e.preventDefault();$("am").classList.add("hidden");let email=$("email").value.trim(),password=$("password").value;if(signup){let r=await sb.auth.signUp({email,password,options:{data:{full_name:$("name").value.trim()}}});if(r.error){$("am").textContent=r.error.message;$("am").className="notice error";return}if(r.data.session)start(r.data.session);else{$("am").textContent="Account created. Confirm your email if required, then login.";$("am").className="notice"}}else{let r=await sb.auth.signInWithPassword({email,password});if(r.error){$("am").textContent=r.error.message;$("am").className="notice error";return}start(r.data.session)}};
