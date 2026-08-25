@@ -10,42 +10,87 @@
 <a href="https://www.instagram.com/shiv_samrat_m1tra_mandal?igsi=MXF2b2IxdXVtMGZ0MA==" target="_blank" rel="noopener noreferrer" style="text-decoration:none;background:#E1306C;color:white;border-radius:8px;padding:7px 9px;font-weight:800">Instagram</a>
 <button id="logout">Logout</button>
 </div></div>
-<div class="tabs"><button class="tab active" data-p="dash">Dashboard</button><button class="tab" data-p="var">Vargani</button><button class="tab" data-p="exp">Expense</button><button class="tab" data-p="pen">Pending</button></div><main>
+<div class="tabs"><button class="tab active" data-p="dash">Dashboard</button><button class="tab" data-p="var">Vargani</button><button class="tab" data-p="sab">Sabhsad</button><button class="tab" data-p="exp">Expense</button><button class="tab" data-p="pen">Pending</button></div><main>
 <section id="dash" class="page active"><div id="msg" class="notice hidden"></div><div class="cards"><div class="card"><div class="label">Collected</div><div class="value green" id="tv">₹0</div></div><div class="card"><div class="label">Expense</div><div class="value red" id="te">₹0</div></div><div class="card"><div class="label">Balance</div><div class="value" id="bal">₹0</div></div></div><div class="box" style="margin-top:9px"><div class="label">Pending</div><div class="value" id="tp">₹0</div></div><div class="export"><button id="csv">⬇ CSV</button><button id="xls">📊 Excel</button></div><h2>Recent Vargani</h2><div id="rv" class="list"></div><h2>Recent Expenses</h2><div id="re" class="list"></div></section>
-<section id="var" class="page"><h2>Add Vargani</h2><form id="vf"><label>Name</label><input id="vn" required><label>Mobile</label><input id="vm" inputmode="tel"><label>Amount</label><input id="va" type="number" min="1" required><label>Date</label><input id="vd" type="date" required><button class="btn">Save Vargani</button></form><h2>All Vargani</h2><div id="vl" class="list"></div></section>
-<section id="exp" class="page"><h2>Add Expense</h2><form id="ef"><label>Description</label><input id="ed" required><label>Category</label><select id="ec"><option>Decoration</option><option>Prasad</option><option>Sound System</option><option>Mandap</option><option>Electricity</option><option>Other</option></select><label>Amount</label><input id="ea" type="number" min="1" required><label>Date</label><input id="et" type="date" required><button class="btn">Save Expense</button></form><h2>All Expenses</h2><div id="el" class="list"></div></section>
-<section id="pen" class="page"><h2>Add Pending</h2><form id="pf"><label>Name</label><input id="pn" required><label>Mobile</label><input id="pm" inputmode="tel"><label>Amount</label><input id="pa" type="number" min="1" required><label>Expected Date</label><input id="pd" type="date"><button class="btn">Save Pending</button></form><h2>Pending Collection</h2><div id="pl" class="list"></div></section>
+<section id="var" class="page"><h2>Add Vargani</h2><input id="vsearch" placeholder="🔎 Search Vargani by name or mobile" style="margin-bottom:8px"><form id="vf"><label>Name</label><input id="vn" required><label>Mobile</label><input id="vm" inputmode="tel"><label>Amount</label><input id="va" type="number" min="1" required><label>Date</label><input id="vd" type="date" required><button class="btn">Save Vargani</button></form><h2>All Vargani</h2><div id="vl" class="list"></div></section>
+<section id="sab" class="page"><h2>Add Sabhsad Contribution</h2><form id="sf"><label>Sabhsad Name</label><input id="sn" required><label>Mobile</label><input id="sm" inputmode="tel"><label>Amount</label><input id="sa" type="number" min="1" required><label>Date</label><input id="sd" type="date" required><label>About</label><input id="sab" placeholder="Personal contribution / note"><button class="btn">Save Sabhsad</button></form><h2>All Sabhsad Contributions</h2><input id="ssearch" placeholder="🔎 Search Sabhsad by name or mobile" style="margin-bottom:8px"><div id="sl" class="list"></div></section><section id="exp" class="page"><h2>Add Expense</h2><form id="ef"><label>Description</label><input id="ed" required><label>Category</label><select id="ec"><option>Decoration</option><option>Prasad</option><option>Sound System</option><option>Mandap</option><option>Electricity</option><option>Other</option></select><label>Amount</label><input id="ea" type="number" min="1" required><label>Date</label><input id="et" type="date" required><button class="btn">Save Expense</button></form><h2>All Expenses</h2><div id="el" class="list"></div></section>
+<section id="pen" class="page"><h2>Add Pending</h2><form id="pf"><label>Name</label><input id="pn" required><label>Mobile</label><input id="pm" inputmode="tel"><label>Amount</label><input id="pa" type="number" min="1" required><label>Expected Date</label><input id="pd" type="date"><label>Pending About</label><input id="pabout" placeholder="e.g. will pay after meeting"><button class="btn">Save Pending</button></form><h2>Pending Collection</h2><input id="psearch" placeholder="🔎 Search Pending by name or mobile" style="margin-bottom:8px"><div id="pl" class="list"></div></section></section>
 </main></div>
 <script type="module">
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-const sb=createClient("https://ufrsbskwjzlsvvxuciox.supabase.co","sb_publishable_oDZnVdHGu8rgUXmnsnJFQw_-uvWpdSX"),$=x=>document.getElementById(x),today=()=>new Date().toISOString().slice(0,10),money=n=>"₹"+Number(n||0).toLocaleString("en-IN");let D={v:[],e:[],p:[]},signup=false;
+const sb=createClient("https://ufrsbskwjzlsvvxuciox.supabase.co","sb_publishable_oDZnVdHGu8rgUXmnsnJFQw_-uvWpdSX"),$=x=>document.getElementById(x),today=()=>new Date().toISOString().slice(0,10),money=n=>"₹"+Number(n||0).toLocaleString("en-IN");let D={v:[],e:[],p:[],s:[]},signup=false;
 function note(t,err=false){$("msg").textContent=t;$("msg").className="notice "+(err?"error":"");$("msg").classList.remove("hidden");setTimeout(()=>$("msg").classList.add("hidden"),3000)}
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]) )}
-async function load(){let [v,e,p]=await Promise.all([sb.from("vargani").select("*").order("created_at",{ascending:false}),sb.from("expenses").select("*").order("created_at",{ascending:false}),sb.from("pending_vargani").select("*").order("created_at",{ascending:false})]);if(v.error||e.error||p.error)return note((v.error||e.error||p.error).message,true);D={v:v.data||[],e:e.data||[],p:p.data||[]};render()}
-function item(title,sub,type,id,mobile="",amount=0){let wa=(type==="vargani"&&mobile)?`<button class="del" style="background:#e8f7ed;color:#16803c" onclick="sendWhatsApp('${esc(mobile)}','${esc(title)}',${Number(amount)||0})">WhatsApp</button>`:"";return `<div class="row"><div><b>${esc(title)}</b><small>${esc(sub)}</small></div><div style="display:flex;gap:6px;align-items:center">${wa}<button class="del" onclick="delRow('${type}','${id}')">Delete</button></div></div>`}
-function render(){let tv=D.v.reduce((a,x)=>a+Number(x.amount),0),te=D.e.reduce((a,x)=>a+Number(x.amount),0),tp=D.p.filter(x=>x.status!=="paid").reduce((a,x)=>a+Number(x.amount),0);$("tv").textContent=money(tv);$("te").textContent=money(te);$("bal").textContent=money(tv-te);$("tp").textContent=money(tp);$("rv").innerHTML=D.v.slice(0,5).map(x=>item(x.person_name,money(x.amount)+" • "+x.collected_on,"vargani",x.id,x.mobile,x.amount)).join("")||"No entries";$("re").innerHTML=D.e.slice(0,5).map(x=>item(x.description,money(x.amount)+" • "+x.category,"expenses",x.id)).join("")||"No entries";$("vl").innerHTML=D.v.map(x=>item(x.person_name,money(x.amount)+" • "+x.collected_on+" • "+(x.mobile||"No mobile"),"vargani",x.id,x.mobile,x.amount)).join("")||"No records";$("el").innerHTML=D.e.map(x=>item(x.description,money(x.amount)+" • "+x.category+" • "+x.spent_on,"expenses",x.id)).join("")||"No records";$("pl").innerHTML=D.p.map(x=>item(x.person_name,money(x.amount)+" • "+(x.expected_on||"No date"),"pending_vargani",x.id)).join("")||"No pending records"}
+async function load(){let [v,e,p,s]=await Promise.all([sb.from("vargani").select("*").order("created_at",{ascending:false}),sb.from("expenses").select("*").order("created_at",{ascending:false}),sb.from("pending_vargani").select("*").order("created_at",{ascending:false}),sb.from("sabhsad").select("*").order("created_at",{ascending:false})]);if(v.error||e.error||p.error||s.error)return note((v.error||e.error||p.error||s.error).message,true);D={v:v.data||[],e:e.data||[],p:p.data||[],s:s.data||[]};render()}
+function filtered(arr,q){q=String(q||"").trim().toLowerCase();if(!q)return arr;return arr.filter(x=>String(x.person_name||"").toLowerCase().includes(q)||String(x.mobile||"").replace(/\\D/g,"").includes(q.replace(/\\D/g,"")))}
+function item(title,sub,type,id,mobile="",amount=0,waType="vargani"){let wa=(mobile&&["vargani","pending","sabhsad"].includes(waType))?`<button class="del" style="background:#e8f7ed;color:#16803c" onclick="sendWhatsApp('${esc(mobile)}','${esc(title)}',${Number(amount)||0},'${waType}')">WhatsApp</button>`:"";return `<div class="row"><div><b>${esc(title)}</b><small>${esc(sub)}</small></div><div style="display:flex;gap:6px;align-items:center">${wa}<button class="del" onclick="delRow('${type}','${id}')">Delete</button></div></div>`}
+function render(){let tv=D.v.reduce((a,x)=>a+Number(x.amount),0),ts=D.s.reduce((a,x)=>a+Number(x.amount),0),te=D.e.reduce((a,x)=>a+Number(x.amount),0),tp=D.p.filter(x=>x.status!=="paid").reduce((a,x)=>a+Number(x.amount),0);$("tv").textContent=money(tv+ts);$("te").textContent=money(te);$("bal").textContent=money(tv+ts-te);$("tp").textContent=money(tp);$("rv").innerHTML=D.v.slice(0,5).map(x=>item(x.person_name,money(x.amount)+" • "+x.collected_on,"vargani",x.id,x.mobile,x.amount)).join("")||"No entries";$("re").innerHTML=D.e.slice(0,5).map(x=>item(x.description,money(x.amount)+" • "+x.category,"expenses",x.id)).join("")||"No entries";$("vl").innerHTML=filtered(D.v,$("vsearch")?.value).map(x=>item(x.person_name,money(x.amount)+" • "+x.collected_on+" • "+(x.mobile||"No mobile"),"vargani",x.id,x.mobile,x.amount)).join("")||"No records";$("el").innerHTML=D.e.map(x=>item(x.description,money(x.amount)+" • "+x.category+" • "+x.spent_on,"expenses",x.id)).join("")||"No records";$("pl").innerHTML=filtered(D.p,$("psearch")?.value).map(x=>item(x.person_name,money(x.amount)+" • "+(x.expected_on||"No date")+" • "+(x.about||"No note"),"pending_vargani",x.id,x.mobile,x.amount,"pending")).join("")||"No pending records";$("sl").innerHTML=filtered(D.s,$("ssearch")?.value).map(x=>item(x.person_name,money(x.amount)+" • "+x.contributed_on+" • "+(x.about||"Personal contribution"),"sabhsad",x.id,x.mobile,x.amount,"sabhsad")).join("")||"No records"}
 window.delRow=async(t,id)=>{if(!confirm("Delete this record?"))return;let r=await sb.from(t).delete().eq("id",id);if(r.error)note(r.error.message,true);else note("Deleted")};
 async function uid(){let r=await sb.auth.getUser();return r.data.user?.id}
-window.sendWhatsApp=(mobile,name,amount)=>{
-let n=String(mobile||"").replace(/\D/g,"");
-if(n.length===10)n="91"+n;
-if(n.length<10)return note("Enter a valid mobile number",true);
-let group="https://chat.whatsapp.com/FlqDRVnkYrfIH5gkFiPmGB?s=cl&p=i&mlu=4";
-let insta="https://www.instagram.com/shiv_samrat_m1tra_mandal";
-let msg=`🙏 शिवसम्राट गणपती मंडळ\n\nनमस्कार ${name},\n\nआपण गणपती वर्गणी म्हणून ₹${Number(amount).toLocaleString("en-IN")} चे दिलेले योगदानाबद्दल मनःपूर्वक धन्यवाद! 🙏\n\nआपले सहकार्य आणि योगदान मंडळासाठी अत्यंत मोलाचे आहे.\n\n🪔 शिवसम्राट गणपती मंडळ\n\n📱 आमच्या WhatsApp ग्रुपमध्ये सहभागी व्हा:\n${group}\n\n📸 Instagram वर आम्हाला Follow करा:\n${insta}`;
-window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,"_blank")
-};
+window.sendWhatsApp=(mobile,name,amount,type="vargani")=>{
+let n=String(mobile||"").replace(/\\D/g,"");if(n.length===10)n="91"+n;if(n.length<10)return note("Enter a valid mobile number",true);
+let group="https://chat.whatsapp.com/FlqDRVnkYrfIH5gkFiPmGB?s=cl&p=i&mlu=4",insta="https://www.instagram.com/shiv_samrat_m1tra_mandal";
+let msg=type==="pending"?`🙏 शिवसम्राट गणपती मंडळ\\n\\nनमस्कार ${name},\\n\\nआपली गणपती वर्गणी ₹${Number(amount).toLocaleString("en-IN")} अजून प्रलंबित आहे. कृपया आपल्या सोयीनुसार वर्गणी जमा करावी. 🙏\\n\\nधन्यवाद!\\n🪔 शिवसम्राट गणपती मंडळ`:type==="sabhsad"?`🙏 शिवसम्राट गणपती मंडळ\\n\\nनमस्कार ${name},\\n\\nआपले सभासद म्हणून ₹${Number(amount).toLocaleString("en-IN")} चे वैयक्तिक योगदान नोंदवले आहे. मनःपूर्वक धन्यवाद! 🙏\\n\\n🪔 शिवसम्राट गणपती मंडळ`: `🙏 शिवसम्राट गणपती मंडळ\\n\\nनमस्कार ${name},\\n\\nआपण गणपती वर्गणी म्हणून ₹${Number(amount).toLocaleString("en-IN")} चे दिलेले योगदानाबद्दल मनःपूर्वक धन्यवाद! 🙏\\n\\n🪔 शिवसम्राट गणपती मंडळ\\n\\n📱 WhatsApp Group:\\n${group}\\n\\n📸 Instagram:\\n${insta}`;
+window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,"_blank")};
 $("vf").onsubmit=async e=>{e.preventDefault();let id=await uid(),r=await sb.from("vargani").insert({person_name:$("vn").value.trim(),mobile:$("vm").value.trim(),amount:+$("va").value,collected_on:$("vd").value,added_by:id});if(r.error)note(r.error.message,true);else{let mobile=$("vm").value.trim(),name=$("vn").value.trim(),amount=+$("va").value;e.target.reset();$("vd").value=today();note("Vargani saved");if(mobile)setTimeout(()=>sendWhatsApp(mobile,name,amount),150)}};
 $("ef").onsubmit=async e=>{e.preventDefault();let id=await uid(),r=await sb.from("expenses").insert({description:$("ed").value.trim(),category:$("ec").value,amount:+$("ea").value,spent_on:$("et").value,added_by:id});if(r.error)note(r.error.message,true);else{e.target.reset();$("et").value=today();note("Expense saved")}};
-$("pf").onsubmit=async e=>{e.preventDefault();let id=await uid(),r=await sb.from("pending_vargani").insert({person_name:$("pn").value.trim(),mobile:$("pm").value.trim(),amount:+$("pa").value,expected_on:$("pd").value||null,added_by:id});if(r.error)note(r.error.message,true);else{e.target.reset();note("Pending saved")}};
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$(b.dataset.p).classList.add("active");document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active")});
-async function start(s){$("auth").classList.add("hidden");$("app").classList.remove("hidden");$("who").textContent=s.user.email;document.querySelectorAll('input[type="date"]').forEach(x=>x.value=today());await load();sb.removeAllChannels();sb.channel("live").on("postgres_changes",{event:"*",schema:"public",table:"vargani"},load).on("postgres_changes",{event:"*",schema:"public",table:"expenses"},load).on("postgres_changes",{event:"*",schema:"public",table:"pending_vargani"},load).subscribe()}
+$("pf").onsubmit=async e=>{e.preventDefault();let id=await uid(),r=await sb.from("pending_vargani").insert({person_name:$("pn").value.trim(),mobile:$("pm").value.trim(),amount:+$("pa").value,expected_on:$("pd").value||null,about:$("pabout").value.trim(),added_by:id});if(r.error)note(r.error.message,true);else{e.target.reset();note("Pending saved")}};
+$("sf").onsubmit=async e=>{e.preventDefault();let id=await uid(),r=await sb.from("sabhsad").insert({person_name:$("sn").value.trim(),mobile:$("sm").value.trim(),amount:+$("sa").value,contributed_on:$("sd").value,about:$("sab").value.trim(),added_by:id});if(r.error)note(r.error.message,true);else{let mobile=$("sm").value.trim(),name=$("sn").value.trim(),amount=+$("sa").value;e.target.reset();$("sd").value=today();note("Sabhsad contribution saved");if(mobile)setTimeout(()=>sendWhatsApp(mobile,name,amount,"sabhsad"),150)}};
+$("vsearch").oninput=render;$("psearch").oninput=render;$("ssearch").oninput=render;
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$(b.dataset.p).classList.add("active");$("sf").onsubmit=async e=>{e.preventDefault();let id=await uid(),r=await sb.from("sabhsad").insert({person_name:$("sn").value.trim(),mobile:$("sm").value.trim(),amount:+$("sa").value,contributed_on:$("sd").value,about:$("sab").value.trim(),added_by:id});if(r.error)note(r.error.message,true);else{let mobile=$("sm").value.trim(),name=$("sn").value.trim(),amount=+$("sa").value;e.target.reset();$("sd").value=today();note("Sabhsad contribution saved");if(mobile)setTimeout(()=>sendWhatsApp(mobile,name,amount,"sabhsad"),150)}};
+$("vsearch").oninput=render;$("psearch").oninput=render;$("ssearch").oninput=render;
+document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active")});
+async function start(s){$("auth").classList.add("hidden");$("app").classList.remove("hidden");$("who").textContent=s.user.email;document.querySelectorAll('input[type="date"]').forEach(x=>x.value=today());await load();sb.removeAllChannels();sb.channel("live").on("postgres_changes",{event:"*",schema:"public",table:"vargani"},load).on("postgres_changes",{event:"*",schema:"public",table:"expenses"},load).on("postgres_changes",{event:"*",schema:"public",table:"pending_vargani"},load).on("postgres_changes",{event:"*",schema:"public",table:"sabhsad"},load).subscribe()}
 $("logout").onclick=()=>sb.auth.signOut();$("sw").onclick=()=>{signup=!signup;$("ab").textContent=signup?"Create Account":"Login";$("nl").classList.toggle("hidden",!signup);$("sw").textContent=signup?"Already have an account? Login":"New user? Create account"};
 $("af").onsubmit=async e=>{e.preventDefault();$("am").classList.add("hidden");let email=$("email").value.trim(),password=$("password").value;if(signup){let r=await sb.auth.signUp({email,password,options:{data:{full_name:$("name").value.trim()}}});if(r.error){$("am").textContent=r.error.message;$("am").className="notice error";return}if(r.data.session)start(r.data.session);else{$("am").textContent="Account created. Confirm your email if required, then login.";$("am").className="notice"}}else{let r=await sb.auth.signInWithPassword({email,password});if(r.error){$("am").textContent=r.error.message;$("am").className="notice error";return}start(r.data.session)}};
 sb.auth.onAuthStateChange((ev,s)=>{if(ev==="SIGNED_OUT"){location.reload()}});
 function download(c,n,t){let u=URL.createObjectURL(new Blob([c],{type:t})),a=document.createElement("a");a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
-function rows(){return [["Type","Name/Description","Mobile","Category","Amount","Date","Status"],...D.v.map(x=>["Vargani",x.person_name,x.mobile,"",x.amount,x.collected_on,"Received"]),...D.e.map(x=>["Expense",x.description,"",x.category,x.amount,x.spent_on,""]),...D.p.map(x=>["Pending Vargani",x.person_name,x.mobile,"",x.amount,x.expected_on||"",x.status]) ]}
+function rows(){return [["Type","Name/Description","Mobile","Category","Amount","Date","Status"],...D.v.map(x=>["Vargani",x.person_name,x.mobile,"",x.amount,x.collected_on,"Received"]),...D.e.map(x=>["Expense",x.description,"",x.category,x.amount,x.spent_on,""]),...D.p.map(x=>["Pending Vargani",x.person_name,x.mobile,"",x.amount,x.expected_on||"",x.status]),...D.s.map(x=>["Sabhsad",x.person_name,x.mobile,x.about||"",x.amount,x.contributed_on,"Received"]) ]}
 $("csv").onclick=()=>download("\ufeff"+rows().map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n"),"ShivSamarat_Ganpati_Vargani.csv","text/csv");
-$("xls").onclick=()=>{let r=rows(),t="<table border=1>"+r.map((x,i)=>"<tr>"+x.map(v=>(i?"<td>":"<th>")+esc(v)+(i?"</td>":"</th>")).join("")+"</tr>").join("")+"</table>";download("\ufeff<html><meta charset=utf-8><body><h2>ShivSamarat Ganpati Vargani</h2>"+t+"</body></html>","ShivSamarat_Ganpati_Vargani.xls","application/vnd.ms-excel")};
+$("xls").onclick=()=>{let r=rows(),t="<table border=1>"+r.map((x,i)=>"<tr>"+x.map(v=>(i?"<td>":"<th>")+esc(v)+(i?"</td>":"</th>")).join("")+"</tr>").join("")+"</table>";download("\ufeff<html><meta charset=utf-8><body><h2>ShivSamarat Ganpati Vargani</h2>"+t+"
+<!--
+SUPABASE SQL TO RUN ONCE:
+
+alter table public.pending_vargani add column if not exists about text;
+
+create table if not exists public.sabhsad (
+  id uuid primary key default gen_random_uuid(),
+  person_name text not null,
+  mobile text,
+  amount numeric not null,
+  contributed_on date not null,
+  about text,
+  added_by uuid references auth.users(id),
+  created_at timestamptz default now()
+);
+
+alter table public.sabhsad enable row level security;
+create policy "authenticated users can read sabhsad" on public.sabhsad for select to authenticated using (true);
+create policy "authenticated users can insert sabhsad" on public.sabhsad for insert to authenticated with check (true);
+create policy "authenticated users can delete sabhsad" on public.sabhsad for delete to authenticated using (true);
+-->
+</body></html>","ShivSamarat_Ganpati_Vargani.xls","application/vnd.ms-excel")};
 let s=(await sb.auth.getSession()).data.session;if(s)start(s);
-</script></body></html>
+</script>
+<!--
+SUPABASE SQL TO RUN ONCE:
+
+alter table public.pending_vargani add column if not exists about text;
+
+create table if not exists public.sabhsad (
+  id uuid primary key default gen_random_uuid(),
+  person_name text not null,
+  mobile text,
+  amount numeric not null,
+  contributed_on date not null,
+  about text,
+  added_by uuid references auth.users(id),
+  created_at timestamptz default now()
+);
+
+alter table public.sabhsad enable row level security;
+create policy "authenticated users can read sabhsad" on public.sabhsad for select to authenticated using (true);
+create policy "authenticated users can insert sabhsad" on public.sabhsad for insert to authenticated with check (true);
+create policy "authenticated users can delete sabhsad" on public.sabhsad for delete to authenticated using (true);
+-->
+</body></html>
